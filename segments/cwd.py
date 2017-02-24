@@ -2,11 +2,52 @@ import os
 
 ELLIPSIS = u'\u2026'
 
+REPLACEMENTS = [
+    {
+        'path': os.getenv('HOME'),
+        'replacement': u'\uf015',
+        'color': Color.HOME_FG
+    },
+    {
+        'path': os.getenv('WINHOME'),
+        'replacement': u'\uf17a',
+        'color': Color.WINHOME_FG
+    },
+    {
+        'name': 'git',
+        'replacement': u'\ue702',
+        'color': Color.GITDIR_FG
+    }]
+
+
+def replace_path(cwd):
+    for replacement in REPLACEMENTS:
+        if 'path' in replacement and cwd.startswith(replacement['path']):
+            return replacement['replacement'] + cwd[len(replacement['path']):]
+    return cwd
+
+
+def replace_name(name):
+    for replacement in REPLACEMENTS:
+        if 'name' in replacement and name == replacement['name']:
+            return replacement['replacement']
+    return name
+
+
+def is_replacement(name):
+    for replacement in REPLACEMENTS:
+        if replacement['replacement'] == name:
+            return True, replacement['color']
+    return False, None
+
 
 def replace_home_dir(cwd):
     home = os.getenv('HOME')
     if cwd.startswith(home):
         return '~' + cwd[len(home):]
+    winhome = os.getenv('WINHOME')
+    if cwd.startswith(winhome):
+        return '~win' + cwd[len(winhome):]
     return cwd
 
 
@@ -49,10 +90,10 @@ def add_cwd_segment(powerline):
     cwd = powerline.cwd or os.getenv('PWD')
     if not py3:
         cwd = cwd.decode("utf-8")
-    cwd = replace_home_dir(cwd)
+    cwd = replace_path(cwd)
 
     if powerline.args.cwd_mode == 'plain':
-        powerline.append(' %s ' % (cwd,), Color.CWD_FG, Color.PATH_BG)
+        powerline.append(' %s ' % (cwd,), Color.CWD_FG, Color.CWD_BG)
         return
 
     names = split_path_into_names(cwd)
@@ -77,14 +118,52 @@ def add_cwd_segment(powerline):
         names = names[-1:]
 
     for i, name in enumerate(names):
-        fg, bg = get_fg_bg(name)
+        fg = Color.PATH_FG
+        bg = Color.PATH_BG
+
+        name = replace_name(name)
 
         separator = powerline.separator_thin
         separator_fg = Color.SEPARATOR_FG
         is_last_dir = (i == len(names) - 1)
-        if requires_special_home_display(name) or is_last_dir:
+        is_second_last_dir = (i == len(names) - 2)
+        is_replaced, replacement_color = is_replacement(name)
+
+        if is_last_dir or is_second_last_dir:
             separator = None
             separator_fg = None
+
+        if is_last_dir:
+            fg = Color.CWD_FG
+            bg = Color.CWD_BG
+
+        if is_replaced:
+            separator_fg = None if (separator_fg is None) else replacement_color
+            if is_last_dir:
+                bg = replacement_color
+            else:
+                fg = replacement_color
+
+        """
+        if requires_special_home_display(name):
+            fg = Color.HOME_FG
+            name = u'\uf015'
+            if is_last_dir:
+                bg = fg
+                fg = Color.CWD_FG
+        if name == 'git':
+            fg = 9
+            name = u'\ue702'
+            if is_last_dir:
+                bg = fg
+                fg = Color.CWD_FG
+        if name == '~win':
+            fg = 0
+            name = u'\uf17a'
+            if is_last_dir:
+                bg = fg
+                fg = Color.CWD_FG
+        """
 
         powerline.append(' %s ' % maybe_shorten_name(powerline, name), fg, bg,
                          separator, separator_fg)

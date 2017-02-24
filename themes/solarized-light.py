@@ -13,6 +13,8 @@ class Color(DefaultColor):
     SEPARATOR_FG = 14
     CWD_BG = 4
     CWD_FG = 7
+    WINHOME_FG = 0
+    GITDIR_FG = 9
 
     READONLY_BG = 209
     READONLY_FG = 15
