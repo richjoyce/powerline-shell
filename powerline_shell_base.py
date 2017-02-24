@@ -27,8 +27,8 @@ class Powerline:
             'separator_thin': u'\u276F'
         },
         'patched': {
-            'lock': u'\uE0A2',
-            'network': u'\uE0A2',
+            'lock': u'\uf023',
+            'network': u'\uf023',
             'separator': u'\uE0B0',
             'separator_thin': u'\uE0B1'
         },
@@ -98,12 +98,12 @@ class Powerline:
 
 class RepoStats:
     symbols = {
-        'detached': u'\u2693',
-        'ahead': u'\u2B06',
-        'behind': u'\u2B07',
-        'staged': u'\u2714',
-        'not_staged': u'\u270E',
-        'untracked': u'\u2753',
+        'detached': u'\uf127',
+        'ahead': u'\uf40a',
+        'behind': u'\uf409',
+        'staged': u'\uf00c',
+        'not_staged': u'\uf040',
+        'untracked': u'\uf421',
         'conflicted': u'\u273C'
     }
 
