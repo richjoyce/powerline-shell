@@ -104,7 +104,8 @@ class RepoStats:
         'staged': u'\uf00c',
         'not_staged': u'\uf040',
         'untracked': u'\uf421',
-        'conflicted': u'\u273C'
+        'conflicted': u'\u273C',
+        'repo': u'\ue725'
     }
 
     def __init__(self):
