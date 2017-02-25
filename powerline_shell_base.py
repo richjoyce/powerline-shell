@@ -78,6 +78,9 @@ class Powerline:
     def draw(self):
         text = (''.join(self.draw_segment(i) for i in range(len(self.segments)))
                 + self.reset) + ' '
+        if len(powerline.write()) > 30:
+            text += ''.join(('\n', self.fgcolor(7), self.bgcolor(10), u' \ue7a2 ',
+                           self.reset, self.fgcolor(10), self.separator)) + ' '
         if py3:
             return text
         else:
@@ -94,6 +97,19 @@ class Powerline:
             self.bgcolor(next_segment[2]) if next_segment else self.reset,
             self.fgcolor(segment[4]),
             segment[3]))
+
+    def write(self):
+        text = (''.join(self.write_segment(i) for i in range(len(self.segments)))
+                + self.reset) + ' '
+        if py3:
+            return text
+        else:
+            return text.encode('utf-8')
+
+    def write_segment(self, idx, right=False):
+        segment = self.segments[idx]
+        next_segment = self.segments[idx + 1] if idx < len(self.segments)-1 else None
+        return ''.join((segment[0], segment[3]))
 
 
 class RepoStats:
